@@ -34,4 +34,9 @@ public class User {
     @Column(name = "last_modified", nullable = false)
     private LocalDateTime lastModifiedTime;
 
+    public User(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
+
 }
