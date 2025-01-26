@@ -1,15 +1,16 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { IdentityService } from '../../../services/identity.service';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
-  styleUrl: './register.component.css'
+  styleUrl: './register.component.css',
+  imports: [ReactiveFormsModule]
 })
 export class RegisterComponent {
-  registerForm: FormGroup;
+  protected registerForm: FormGroup;
 
   constructor(
     private fb: FormBuilder,

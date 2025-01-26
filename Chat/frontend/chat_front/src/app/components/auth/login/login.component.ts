@@ -7,22 +7,18 @@ import { OnInit } from '@angular/core';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
+  styleUrl: './login.component.css',
+  imports: [ReactiveFormsModule]
 })
 
-export class LoginComponent implements OnInit{
-  loginForm: FormGroup;
+export class LoginComponent{
+  protected loginForm: FormGroup;
 
   constructor(
     private fb: FormBuilder,
     private identityService: IdentityService,
     private router: Router
   ) {
-
-  }
-
-  ngOnInit(): void {
-    // Initialize the form inside ngOnInit
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]

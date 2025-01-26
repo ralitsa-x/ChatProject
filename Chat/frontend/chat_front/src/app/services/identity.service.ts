@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { environment } from '../environments/environment';
+import { LoginUser, RegisteredUser } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,7 @@ export class IdentityService {
 
   constructor(private http: HttpClient) {}
 
-  login(user: { email: string; password: string }): Observable<any> {
+  login(user: LoginUser): Observable<any> {
     return new Observable((observer) => {
       this.http.post<any>(`${this.baseUrl}/login`, user).subscribe(
         (data) => {
@@ -25,7 +26,7 @@ export class IdentityService {
     });
   }
 
-  register(user: { email: string; password: string }): Observable<void> {
+  register(user: RegisteredUser): Observable<void> {
     return this.http.post<void>(`${this.baseUrl}/register`, user);
   }
 
