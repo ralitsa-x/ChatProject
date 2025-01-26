@@ -28,12 +28,28 @@ public class UserController {
                     .withData(result)
                     .withCode(HttpStatus.CREATED)
                     .build();
-        } catch (IllegalArgumentException ex) {
+        } catch (Exception e) {
             return AppResponse.error()
-                    .withMessage(ex.getMessage())
+                    .withMessage(e.getMessage())
                     .withCode(HttpStatus.BAD_REQUEST)
                     .build();
         }
+    }
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody User user) {
+        try{
+            var result = userService.findByEmail(user.getEmail());
+            return AppResponse.success()
+                    .withMessage("logged!")
+                    .withCode(HttpStatus.OK)
+                    .build();
+        } catch (Exception e) {
+            return AppResponse.error()
+                    .withMessage(e.getMessage())
+                    .withCode(HttpStatus.BAD_REQUEST)
+                    .build();
+        }
+
     }
     @GetMapping("/users")
     public ResponseEntity<?> getUsers(@RequestParam(name = "search", required = false) String search) {

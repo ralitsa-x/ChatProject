@@ -28,6 +28,20 @@ public class UserService {
 
         return getUserDto(user);
     }
+    public UserDto findByEmail(String email){
+        User user = userRepository.findByEmail(email);
+        if(user == null){
+            throw new IllegalArgumentException("Email not found");
+        }
+        return getUserDto(user);
+    }
+    public UserDto findByEmailAndPassword(String email, String password){
+        User user = userRepository.findByEmailAndPassword(email, password);
+        if(user == null){
+            throw new IllegalArgumentException("Email not found");
+        }
+        return getUserDto(user);
+    }
     public List<UserDto> findUser(String email){
         List<UserDto> result = new ArrayList<>();
 
@@ -47,6 +61,7 @@ public class UserService {
         }
         return result;
     }
+
     public UserDto getUserDto(User user){
         UserDto userDto = new UserDto();
         userDto.setId(user.getId());
