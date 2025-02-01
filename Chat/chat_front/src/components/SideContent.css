@@ -1,0 +1,14 @@
+.circle-btn {
+    width: 50px;  /* Fixed width */
+    height: 50px; /* Fixed height */
+    background-color: #add8e6; /* Light Blue */
+    transition: background-color 0.3s ease; /* Smooth hover effect */
+  }
+
+  .circle-btn:hover {
+    background-color: #87ceeb; /* Slightly darker blue */
+  }
+
+  .circle-btn:focus {
+    box-shadow: none; /* Removes focus outline */
+  }

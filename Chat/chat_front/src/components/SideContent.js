@@ -1,6 +1,5 @@
-import React, { useEffect } from "react";
 import { Button } from "react-bootstrap";
-import { chatTypes, views } from "../utils/Constants";
+import './SideContent.css';
 
 const SideContent = ({
   channels = [],
@@ -17,44 +16,44 @@ const SideContent = ({
 
   return (
     <div className="w-1/4 h-full p-4">
-      <h2 className="font-bold text-lg mb-4">Channels</h2>
-      <ul className="mb-8">
-        {Array.isArray(channels) && channels.map((channel) => (
-          <li
-            key={channel.id}
-            onClick={() => onSelect(channel.id, chatTypes.CHANNEL)}
-            className="cursor-pointer p-2"
-          >
-            {channel.name}
-          </li>
-        ))}
-      </ul>
-      <Button
-        variant="dark"
-        onClick={onCreateChannel}
-        className="bg-blue-500 text-white px-4 py-2 rounded w-full mb-4"
-      >
-        Create Channel
-      </Button>
       <h2 className="font-bold text-lg mb-4">Friends</h2>
-      <ul className="mb-8">
+      <div className="mb-8">
         {Array.isArray(friends) && friends.map((friend) => (
-          <li
+          <div
             key={friend.otherUser.id}
-            onClick={() => onSelect(friend.id, chatTypes.FRIEND)}
+            onClick={() => onSelect(friend.id)}
             className="cursor-pointer p-2"
           >
             {friend.otherUser.email}
-          </li>
+          </div>
         ))}
-      </ul>
+      </div>
       <Button
         variant="dark"
         onClick={onFindFriends}
-        className="bg-blue-500 text-white px-4 py-2 rounded w-full"
+        className="bg-blue-500 mt-3 text-white px-4 py-2 rounded w-full"
       >
-        {view === views.CHANNELS ? "Find Friends" : "Channels"}
+        Find Friends
       </Button>
+      <h2 className="font-bold text-lg mb-4 mt-4">Channels</h2>
+      <div className="d-flex flex-wrap justify-content-start gap-3">
+        {Array.isArray(channels) && channels.map((channel) => ( 
+          <Button
+            className="circle-btn rounded-circle d-flex justify-content-center align-items-center border-0 text-white bg-success"
+            key = {channel.id}
+            onClick={() => onSelect(channel.id)}
+            title={channel.name} >{channel.name.charAt(0).toUpperCase()}
+          </Button>
+        ))}
+      </div>
+      <Button
+        variant="dark"
+        onClick={onCreateChannel}
+        className="bg-blue-500 mt-3 text-white px-4 py-2 rounded w-full mb-4"
+      >
+        Create Channel
+      </Button>
+      
     </div>
   );
 };

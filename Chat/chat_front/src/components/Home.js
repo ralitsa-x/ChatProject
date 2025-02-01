@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Col, Button, Modal, Form } from "react-bootstrap";
+import { Col, Button, Modal, Form, Row, Container, Card } from "react-bootstrap";
 import SideContent from "../components/SideContent";
 import ChatContainer from "../components/ChatContainer";
-import UsersContainer from "../components/UserContainer";
 import { useIdentityContext } from "../utils/UseIdentitycontext";
 import * as userService from "../services/UserService";
 import * as channelService from "../services/ChannelService";
 import * as messageService from "../services/MessageService";
-import { chatTypes, roles, views } from "../utils/Constants";
 
 const Home = () => {
   const [messages, setMessages] = useState([]);
@@ -15,7 +13,6 @@ const Home = () => {
   const [friends, setFriends] = useState([]);
   const [channelMembers, setChannelMembers] = useState([]);
   const [selectedChannelId, setSelectedChannelId] = useState(null);
-  const [view, setView] = useState(views.CHANNELS);
   const [showCreateChannelModal, setShowCreateChannelModal] = useState(false);
   const [newChannelName, setNewChannelName] = useState("");
   const { user } = useIdentityContext();
@@ -23,12 +20,9 @@ const Home = () => {
   useEffect(() => {
     async function fetchData() {
       try {
-        
         const result = await userService.getUsers();
         const users = result.data;
-        console.log(users);
         const currentUserId = users.find((u) => user.id === u.id);
-        console.log(currentUserId);
 
         const resF = await userService.getFriendsToUser(currentUserId.id);
         const friends = resF.data;
@@ -38,11 +32,9 @@ const Home = () => {
 
         const res = await channelService.getChannels(currentUserId);
         const channels = res.data;
-        if(Array.isArray(channels)){
-          console.log(channels);
-         setChannels(channels);
+        if (Array.isArray(channels)) {
+          setChannels(channels);
         }
-        
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -51,30 +43,16 @@ const Home = () => {
     fetchData();
   }, [user]);
 
-  const handleSelect = async (id, type) => {
+  const handleSelect = async (channelName) => {
     try {
       const currentUserId = user.id;
 
-      if (type === chatTypes.FRIEND) {
-        const smallerId = Math.min(currentUserId, id);
-        const largerId = Math.max(currentUserId, id);
-        const channelName = `${smallerId}-${largerId}`;
-
-        const channel = channels.data.find((ch) => ch.name === channelName);
-        if (channel) {
-          setSelectedChannelId(channel.id);
-          const messages = await messageService.getMessages(channel.id);
-          setMessages(messages);
-
-          const members = await channelService.getChannelMembers(channel.id);
-          setChannelMembers(members);
-        }
-      } else if (type === chatTypes.CHANNEL) {
-        setSelectedChannelId(id);
-        const messages = await messageService.getMessages(id);
+      const channel = channels.find((ch) => ch.name === channelName);
+      if (channel) {
+        setSelectedChannelId(channel.id);
+        const messages = await messageService.getMessages(channel.id);
         setMessages(messages);
-
-        const members = await channelService.getChannelMembers(id);
+        const members = await channelService.getChannelMembers(channel.id);
         setChannelMembers(members);
       }
     } catch (error) {
@@ -105,17 +83,14 @@ const Home = () => {
 
   const handleCreateChannel = async () => {
     try {
-      console.log("User:", user); 
-      console.log("User ID:", user?.id); 
       const newChannel = await channelService.createChannel(
         user.id,
         newChannelName
       );
-      setChannels(newChannel);
+      setChannels((prevChannels) => [...prevChannels, newChannel]);
       setShowCreateChannelModal(false);
-      // setNewChannelName("");
-      handleSelect(newChannel.id, chatTypes.CHANNEL);
-      //setView(views.CHANNELS);
+      setNewChannelName("");
+      handleSelect(newChannel.id);
     } catch (error) {
       console.error("Error creating channel:", error);
     }
@@ -137,14 +112,6 @@ const Home = () => {
     } catch (error) {
       console.error("Error adding friend:", error);
     }
-  };
-
-  const handleFindFriends = () => {
-    setView(views.USERS);
-  };
-
-  const handleChannels = () => {
-    setView(views.CHANNELS);
   };
 
   const handleDeleteChannel = async () => {
@@ -181,74 +148,52 @@ const Home = () => {
   }, [selectedChannelId]);
 
   return (
-    <div className="d-flex w-100">
-      <Col sm={2}>
-        <SideContent
-          channels={channels}
-          friends={friends}
-          onSelect={handleSelect}
-          onFindFriends={
-            view === views.CHANNELS ? handleFindFriends : handleChannels
-          }
-          onCreateChannel={() => setShowCreateChannelModal(true)}
-          view={view}
-        />
-      </Col>
-      <Col sm={10}>
-        {view === views.CHANNELS ? (
-          <ChatContainer
-            channelName={
-              Array.isArray(channels) ? channels.find((c) => c.id === selectedChannelId) : null
-            }
-            channelMembers={channelMembers}
-            isOwner={channelMembers.some(
-              (u) => u.id === user.id && u.role.id === roles.OWNER
-            )}
-            isAdmin={channelMembers.some(
-              (u) => u.id === user.id && u.role.id === roles.ADMIN
-            )}
-            messages={messages}
-            friends={friends}
-            onSendMessage={handleSendMessage}
-            onDeleteChannel={handleDeleteChannel}
-          />
-        ) : (
-          <UsersContainer friends={friends} onAddFriend={handleAddFriend} />
-        )}
-      </Col>
+    <Container fluid className="p-4">
+      <Row className="g-4">
+        <Col md={3} className="">
+          <Card className="h-100"> 
+            <Card.Header className="bg-black text-white">
+              <h4>Channels & Friends</h4>
+            </Card.Header>
+            <Card.Body>
+              <SideContent
+                channels={channels}
+                friends={friends}
+                onSelect={handleSelect}
+                onFindFriends={handleAddFriend}
+                onCreateChannel={() => setShowCreateChannelModal(true)}
+              />
+            </Card.Body>
+          </Card>
+        </Col>
 
-      <Modal
-        show={showCreateChannelModal}
-        onHide={() => setShowCreateChannelModal(false)}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Create Channel</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form.Group controlId="channelName">
-            <Form.Label>Channel Name</Form.Label>
-            <Form.Control
-              type="text"
-              value={newChannelName}
-              onChange={(e) => setNewChannelName(e.target.value)}
-              placeholder="Enter channel name"
-              required
-            />
-          </Form.Group>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button
-            variant="secondary"
-            onClick={() => setShowCreateChannelModal(false)}
-          >
-            Cancel
-          </Button>
-          <Button variant="primary" onClick={handleCreateChannel}>
-            Create
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </div>
+        <Col md={9}>
+          <Card className="h-100">
+            <Card.Header className="bg-success text-white">
+              <h4>Chat</h4>
+            </Card.Header>
+            <Card.Body className="d-flex flex-column">
+              <ChatContainer
+                channelName={
+                  channels ? channels.find((c) => c.id === selectedChannelId) : null
+                }
+                channelMembers={channelMembers}
+                isOwner={channelMembers.some(
+                  (u) => u.id === user.id && u.role.id === "OWNER"
+                )}
+                isAdmin={channelMembers.some(
+                  (u) => u.id === user.id && u.role.id === "ADMIN"
+                )}
+                messages={messages}
+                friends={friends}
+                onSendMessage={handleSendMessage}
+                onDeleteChannel={handleDeleteChannel}
+              />
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 

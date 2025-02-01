@@ -37,13 +37,13 @@ export default function Login() {
     });
   };
 
-  const formWrapperStyles = `d-flex flex-column justify-content-center align-items-center`;
+  const formWrapperStyles = `d-flex flex-column justify-content-center align-items-center h-100`;
 
   return (
-    <Row style={{ width: "100%" }}>
+    <div style={{ width: "100%", height: "100%", position: "absolute" }}>
       <div className={formWrapperStyles}>
         <div className="bg-light rounded shadow p-3">
-          <h1 className="pb-2">Login</h1>
+          <h1 className="pb-2 text-success">Login</h1>
           <div>
             <Form onSubmit={onFormSubmit}>
               <Form.Group className="form-group mb-3" controlId="email">
@@ -66,13 +66,13 @@ export default function Login() {
                   required
                 />
               </Form.Group>
-              <Button variant="dark" type="submit">
+              <Button variant="success" type="submit">
                 Login
               </Button>
               <Form.Group>
                 <p className="d-flex justify-content-center gap-1 m-0 mt-2">
                   <span>You don't have account?</span>
-                  <Link className="nav-link" to="/register">
+                  <Link className="nav-link text-success" to="/register">
                     <u>Register</u>
                   </Link>
                 </p>
@@ -81,6 +81,6 @@ export default function Login() {
           </div>
         </div>
       </div>
-    </Row>
+    </div>
   );
 }
