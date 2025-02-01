@@ -13,17 +13,9 @@ export class IdentityService {
 
   constructor(private http: HttpClient) {}
 
-  login(user: LoginUser): Observable<any> {
-    return new Observable((observer) => {
-      this.http.post<any>(`${this.baseUrl}/login`, user).subscribe(
-        (data) => {
-          this.setUser(data);
-          observer.next(data);
-          observer.complete();
-        },
-        (error) => observer.error(error)
-      );
-    });
+  public login(email: string, password: string) {
+    const user = { email, password };
+    return this.http.post<any>(this.baseUrl, user);
   }
 
   register(user: RegisteredUser): Observable<void> {

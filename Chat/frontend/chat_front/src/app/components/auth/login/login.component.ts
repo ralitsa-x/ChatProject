@@ -25,10 +25,10 @@ export class LoginComponent{
     });
   }
 
-  onFormSubmit(): void {
+  public onFormSubmit(): void {
     if (this.loginForm.valid) {
       const user = this.loginForm.value;
-      this.identityService.login(user).subscribe(
+      this.identityService.login(user.email,user.password).subscribe(
         (res) => {
           this.router.navigate(['/']);
         },

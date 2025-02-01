@@ -20,7 +20,7 @@ public class UserController {
     private final UserService userService;
     private final FriendshipService friendshipService;
 
-    @PostMapping("/users")
+    @PostMapping("/register")
     public ResponseEntity<?> create(@RequestBody User user) {
         try {
             var result = userService.createUser(user);
@@ -41,6 +41,7 @@ public class UserController {
             var result = userService.findByEmail(user.getEmail());
             return AppResponse.success()
                     .withMessage("logged!")
+                    .withData(result)
                     .withCode(HttpStatus.OK)
                     .build();
         } catch (Exception e) {
@@ -63,6 +64,21 @@ public class UserController {
     public ResponseEntity<?> addFriend(@RequestParam Integer currentUserId, @RequestParam Integer otherUserId){
         try{
             var result = friendshipService.addFriendship(currentUserId, otherUserId);
+            return AppResponse.success()
+                    .withData(result)
+                    .withCode(HttpStatus.CREATED)
+                    .build();
+        } catch (Exception e) {
+            return AppResponse.error()
+                    .withMessage(e.getMessage())
+                    .withCode(HttpStatus.BAD_REQUEST)
+                    .build();
+        }
+    }
+    @GetMapping("/friends")
+    public ResponseEntity<?> getAllFriendships(@RequestParam Integer id) {
+        try{
+            var result = friendshipService.getAllFriendships(id);
             return AppResponse.success()
                     .withData(result)
                     .withCode(HttpStatus.CREATED)

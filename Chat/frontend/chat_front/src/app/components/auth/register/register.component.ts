@@ -23,7 +23,7 @@ export class RegisterComponent {
     });
   }
 
-  onFormSubmit(): void {
+  public onFormSubmit(): void {
     if (this.registerForm.valid) {
       const user = this.registerForm.value;
       this.identityService.register(user).subscribe(

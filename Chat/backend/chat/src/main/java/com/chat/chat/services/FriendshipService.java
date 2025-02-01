@@ -11,6 +11,8 @@ import lombok.*;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -31,12 +33,20 @@ public class FriendshipService {
             throw new IllegalArgumentException("User not found. Might also be inactive.");
         }
 
-
         var result = new Friendship(currentUserEntity,otherUserEntity);
         friendshipRepository.save(result);
-
         return createFriendshipDtoFromFriendship(result);
-
+    }
+    public List<FriendshipDto> getAllFriendships(Integer currentUserId) {
+        List<FriendshipDto> result = new ArrayList<>();
+        List<Friendship> friendships = friendshipRepository.getAllFriendshipsById(currentUserId);
+        if( friendships == null) {
+            throw new IllegalArgumentException("User not found. Might also be inactive.");
+        }
+        for (Friendship f : friendships){
+            result.add(createFriendshipDtoFromFriendship(f));
+        }
+        return result;
     }
     public FriendshipDto createFriendshipDtoFromFriendship(Friendship friendship) {
         return new FriendshipDto(
