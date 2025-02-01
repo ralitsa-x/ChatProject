@@ -3,13 +3,13 @@ import { globalConstants } from "../utils/Constants";
 
 const baseUrl = globalConstants.BASE_URL;
 
-export async function getMessages(channelId) {
+export async function getMessages(channel) {
   try {
     const response = await axios.get(
-      `${baseUrl}/channels/${channelId}/messages`
+      `${baseUrl}/channels/${channel.id}/messages`
     );
 
-    if (response.data.code === 200) {
+    if (response.data.code === 200 || response.data.code === 201) {
       return response.data;
     } else {
       throw new Error("Failed to fetch messages");

@@ -16,11 +16,20 @@ export async function getUsers() {
   }
 }
 
-export async function addFriend(currentUserId, friendId) {
+export async function getFriendsToUser(currentUser) {
+  try{
+    const response = await axios.get(`${baseUrl}/friends?id=${currentUser}`);
+    return response.data;
+  } catch (error){
+    console.error("Error fetching all friends: ", error);
+    throw error;
+  }
+  
+}
+
+export async function addFriend(currentUserId, otherUserId) {
   try {
-    const response = await axios.post(`${baseUrl}/add-friend`, null, {
-      params: { currentUserId, friendId },
-    });
+    const response = await axios.post(`${baseUrl}/add-friend?currentUserId=${currentUserId}&otherUserId=${otherUserId}`);
     return response.data;
   } catch (error) {
     console.error("Error adding friend:", error);

@@ -59,7 +59,7 @@ const ChatContainer = ({
   };
 
   return (
-    <div className="w-3/4 h-full bg-yellow-100 p-4 flex flex-col">
+    <div className="w-3 h-full bg-yellow-100 p-4 flex flex-col">
       <Row>
         <Col sm={8}>
           <h2>

@@ -1,9 +1,0 @@
-<div class="users-container">
-  <h2>Find Friends</h2>
-  <div class="users-grid">
-    <div *ngFor="let user of users" class="user-card">
-      <strong>{{ user.email }}</strong>
-      <button (click)="addFriend(user.id)">Add Friend</button>
-    </div>
-  </div>
-</div>

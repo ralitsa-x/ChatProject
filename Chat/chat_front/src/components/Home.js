@@ -30,12 +30,19 @@ const Home = () => {
         const currentUserId = users.find((u) => user.id === u.id);
         console.log(currentUserId);
 
-        if (currentUserId) {
-          setFriends(currentUserId.friendshipsInitiatedUsers);
+        const resF = await userService.getFriendsToUser(currentUserId.id);
+        const friends = resF.data;
+        if (Array.isArray(friends)) {
+          setFriends(friends);
         }
 
-        const channels = await channelService.getChannels(currentUserId);
-        setChannels(channels);
+        const res = await channelService.getChannels(currentUserId);
+        const channels = res.data;
+        if(Array.isArray(channels)){
+          console.log(channels);
+         setChannels(channels);
+        }
+        
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -46,14 +53,14 @@ const Home = () => {
 
   const handleSelect = async (id, type) => {
     try {
-      const currentUserId = user;
+      const currentUserId = user.id;
 
       if (type === chatTypes.FRIEND) {
         const smallerId = Math.min(currentUserId, id);
         const largerId = Math.max(currentUserId, id);
         const channelName = `${smallerId}-${largerId}`;
 
-        const channel = channels.find((ch) => ch.name === channelName);
+        const channel = channels.data.find((ch) => ch.name === channelName);
         if (channel) {
           setSelectedChannelId(channel.id);
           const messages = await messageService.getMessages(channel.id);
@@ -98,19 +105,37 @@ const Home = () => {
 
   const handleCreateChannel = async () => {
     try {
-      console.log("User:", user); // Add this for debugging
-  console.log("User ID:", user?.id); 
+      console.log("User:", user); 
+      console.log("User ID:", user?.id); 
       const newChannel = await channelService.createChannel(
         user.id,
         newChannelName
       );
-      setChannels((prevChannels) => [...prevChannels, newChannel]);
+      setChannels(newChannel);
       setShowCreateChannelModal(false);
-      setNewChannelName("");
+      // setNewChannelName("");
       handleSelect(newChannel.id, chatTypes.CHANNEL);
-      setView(views.CHANNELS);
+      //setView(views.CHANNELS);
     } catch (error) {
       console.error("Error creating channel:", error);
+    }
+  };
+
+  const handleAddFriend = async (friendId) => {
+    try {
+      await userService.addFriend(user.id, friendId);
+
+      const updatedUsers = await userService.getUsers();
+      const currentUser = updatedUsers.find((u) => u.id === user.id);
+
+      if (currentUser) {
+        setFriends(currentUser);
+      }
+
+      const updatedChannels = await channelService.getChannels(user.id);
+      setChannels(updatedChannels);
+    } catch (error) {
+      console.error("Error adding friend:", error);
     }
   };
 
@@ -173,7 +198,7 @@ const Home = () => {
         {view === views.CHANNELS ? (
           <ChatContainer
             channelName={
-              channels.find((ch) => ch.id === selectedChannelId)?.name
+              Array.isArray(channels) ? channels.find((c) => c.id === selectedChannelId) : null
             }
             channelMembers={channelMembers}
             isOwner={channelMembers.some(
@@ -188,7 +213,7 @@ const Home = () => {
             onDeleteChannel={handleDeleteChannel}
           />
         ) : (
-          <UsersContainer friends={friends} />
+          <UsersContainer friends={friends} onAddFriend={handleAddFriend} />
         )}
       </Col>
 

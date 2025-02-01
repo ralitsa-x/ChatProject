@@ -1,20 +1,25 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Button } from "react-bootstrap";
 import { chatTypes, views } from "../utils/Constants";
 
 const SideContent = ({
-  channels,
-  friends,
+  channels = [],
+  friends = [],
   onSelect,
   onFindFriends,
   onCreateChannel,
-  view,
+  view
 }) => {
+  
+  console.log('Channels: ',channels);
+  console.log('Friends: ',friends);
+
+
   return (
     <div className="w-1/4 h-full p-4">
       <h2 className="font-bold text-lg mb-4">Channels</h2>
       <ul className="mb-8">
-        {channels.map((channel) => (
+        {Array.isArray(channels) && channels.map((channel) => (
           <li
             key={channel.id}
             onClick={() => onSelect(channel.id, chatTypes.CHANNEL)}
@@ -33,13 +38,13 @@ const SideContent = ({
       </Button>
       <h2 className="font-bold text-lg mb-4">Friends</h2>
       <ul className="mb-8">
-        {friends.map((friend) => (
+        {Array.isArray(friends) && friends.map((friend) => (
           <li
-            key={friend.id}
+            key={friend.otherUser.id}
             onClick={() => onSelect(friend.id, chatTypes.FRIEND)}
             className="cursor-pointer p-2"
           >
-            {friend.email}
+            {friend.otherUser.email}
           </li>
         ))}
       </ul>
